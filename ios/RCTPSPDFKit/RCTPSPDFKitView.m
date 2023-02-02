@@ -30,15 +30,90 @@
 
 @implementation RCTPSPDFKitView
 
+- (void)setupDefaultStylesIfNeeded {
+    // Line widths.
+    [self setLastUsedValue:@(4) forProperty:"lineWidth" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, nil)];
+    [self setLastUsedValue:@(4) forProperty:@"lineWidth" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, nil)];
+    [self setLastUsedValue:@(4) forProperty:@"lineWidth" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkPen)];
+    [self setLastUsedValue:@(30) forProperty:@"lineWidth" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkHighlighter)];
+    [self setLastUsedValue:@(5) forProperty:@"lineWidth" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringSquare, nil)];
+    [self setLastUsedValue:@(5) forProperty:@"lineWidth" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringCircle, nil)];
+    [self setLastUsedValue:@(3) forProperty:@"lineWidth" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringPolygon, nil)];
+    [self setLastUsedValue:@(3) forProperty:@"lineWidth" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringPolygon, PSPDFAnnotationVariantStringPolygonCloud)];
+    [self setLastUsedValue:@(3) forProperty:@"lineWidth" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringLine, nil)];
+    [self setLastUsedValue:@(4) forProperty:@"lineWidth" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringLine, PSPDFAnnotationVariantStringLineArrow)];
+    [self setLastUsedValue:@(3) forProperty:@"lineWidth" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringPolyLine, nil)];
+    [self setLastUsedValue:@(2) forProperty:@"lineWidth" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringSignature, nil)];
+    [self setLastUsedValue:@(10) forProperty:@"lineWidth" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringEraser, nil)];
+
+    // Colors.
+    let black = UIColor.blackColor;
+    let blue = [UIColor colorWithRed:0.141f green:0.573f blue:0.984f alpha:1.0f]; // #2492FB
+    let red = [UIColor colorWithRed:0.871f green:0.278f blue:0.31f alpha:1.0f]; // #DE474F
+    let yellow = [UIColor colorWithRed:0.996f green:0.91f blue:0.196f alpha:1.0f]; // #FEE832
+    [self setLastUsedValue:yellow forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringHighlight, nil)];
+    [self setLastUsedValue:black forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringUnderline, nil)];
+    [self setLastUsedValue:red forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringSquiggly, nil)];
+    [self setLastUsedValue:red forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringStrikeOut, nil)];
+
+    // Set ink and variants.
+    [self setLastUsedValue:black forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, nil)];
+    [self setLastUsedValue:black forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkMagic)];
+    [self setLastUsedValue:black forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkPen)];
+    [self setLastUsedValue:black forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkHighlighter)];
+    [self setLastUsedValue:@(0.5) forProperty:@"alpha" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkHighlighter)];
+
+    [self setLastUsedValue:black forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringSquare, nil)];
+    [self setLastUsedValue:black forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringCircle, nil)];
+
+    [self setLastUsedValue:black forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringPolygon, nil)];
+    [self setLastUsedValue:black forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringPolygon, PSPDFAnnotationVariantStringPolygonCloud)];
+
+    [self setLastUsedValue:black forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringLine, nil)];
+    [self setLastUsedValue:black forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringLine, PSPDFAnnotationVariantStringLineArrow)];
+    [self setLastUsedValue:black forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringPolyLine, nil)];
+    [self setLastUsedValue:black forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringSignature, nil)];
+    [self setLastUsedValue:black forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringFreeText, nil)];
+    [self setLastUsedValue:black forProperty:@"color" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringRedaction, nil)];
+
+    // Arrow speciality.
+    [self setLastUsedValue:@(PSPDFLineEndTypeOpenArrow) forProperty:@"lineEnd2" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringLine, PSPDFAnnotationVariantStringLineArrow)];
+
+    // Fonts.
+    [self setLastUsedValue:@(12) forProperty:@"fontSize" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringFreeText, nil)];
+    [self setLastUsedValue:@"Helvetica" forProperty:@"fontName" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringFreeText, nil)];
+
+    // Border effect.
+    [self setLastUsedValue:@(PSPDFAnnotationBorderEffectNoEffect) forProperty:@"borderEffect" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringCircle, nil)];
+    [self setLastUsedValue:@(PSPDFAnnotationBorderEffectNoEffect) forProperty:@"borderEffect" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringSquare, nil)];
+    [self setLastUsedValue:@(PSPDFAnnotationBorderEffectNoEffect) forProperty:@"borderEffect" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringPolygon, nil)];
+    [self setLastUsedValue:@(PSPDFAnnotationBorderEffectCloudy) forProperty:@"borderEffect" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringPolygon, PSPDFAnnotationVariantStringPolygonCloud)];
+    [self setLastUsedValue:@(2) forProperty:@"borderEffectIntensity" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringPolygon, PSPDFAnnotationVariantStringPolygonCloud)];
+
+    // Blend mode.
+    [self setLastUsedValue:@(kCGBlendModeMultiply) forProperty:@"blendMode" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringHighlight, nil)];
+    [self setLastUsedValue:@(kCGBlendModeMultiply) forProperty:@"blendMode" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkHighlighter)];
+
+    // Fill color.
+    [self setLastUsedValue:black forProperty:@"fillColor" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringRedaction, nil)];
+
+    // Outline color.
+    [self setLastUsedValue:red forProperty:@"outlineColor" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringRedaction, nil)];
+    [self setLastUsedValue:nil forProperty:@"overlayText" forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringRedaction, nil)];
+}
+
+- (void)setLastUsedValue:(nullable id)value forProperty:(NSString *)styleProperty forKey:(PSPDFAnnotationString)key;
+
 - (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
-    NSLog(@"Color change1.");
+    [self setupDefaultStylesIfNeeded];
+    NSLog(@"Color change 1");
     UIColor *drawingColor = [UIColor greenColor];
 UIColor *highlightingColor = [UIColor redColor];
 NSString *colorProperty = NSStringFromSelector(@selector(color));
     [PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:drawingColor forProperty:colorProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, nil)];
 [PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:drawingColor forProperty:colorProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkPen)];
-    NSLog(@"Color change.");
+    NSLog(@"Color change 2");
     // Set configuration to use the custom annotation toolbar when initializing the `PSPDFViewController`.
     // For more details, see `PSCCustomizeAnnotationToolbarExample.m` from the Catalog app and our documentation here: https://pspdfkit.com/guides/ios/customizing-the-interface/customize-the-annotation-toolbar/
     _pdfController = [[PSPDFViewController alloc] initWithDocument:nil configuration:[PSPDFConfiguration configurationWithBuilder:^(PSPDFConfigurationBuilder *builder) {
