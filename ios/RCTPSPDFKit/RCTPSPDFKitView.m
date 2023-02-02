@@ -32,6 +32,13 @@
 
 - (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
+    NSLog(@"Color change1.");
+    UIColor *drawingColor = [UIColor greenColor];
+UIColor *highlightingColor = [UIColor redColor];
+NSString *colorProperty = NSStringFromSelector(@selector(color));
+    [PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:drawingColor forProperty:colorProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, nil)];
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:drawingColor forProperty:colorProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkPen)];
+    NSLog(@"Color change.");
     // Set configuration to use the custom annotation toolbar when initializing the `PSPDFViewController`.
     // For more details, see `PSCCustomizeAnnotationToolbarExample.m` from the Catalog app and our documentation here: https://pspdfkit.com/guides/ios/customizing-the-interface/customize-the-annotation-toolbar/
     _pdfController = [[PSPDFViewController alloc] initWithDocument:nil configuration:[PSPDFConfiguration configurationWithBuilder:^(PSPDFConfigurationBuilder *builder) {
