@@ -299,6 +299,11 @@
   }
   
   [self.pdfController reloadData];
+  UIColor *drawingColor = [UIColor greenColor];
+UIColor *highlightingColor = [UIColor redColor];
+NSString *colorProperty = NSStringFromSelector(@selector(color));
+  [PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:drawingColor forProperty:colorProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, nil)];
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:drawingColor forProperty:colorProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkPen)];
   return success;
 }
 
