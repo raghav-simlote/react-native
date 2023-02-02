@@ -105,6 +105,14 @@
 - (void)setLastUsedValue:(nullable id)value forProperty:(NSString *)styleProperty forKey:(PSPDFAnnotationString)key;
 
 - (instancetype)initWithFrame:(CGRect)frame {
+    NSArray<PSPDFColorPreset *> *presets = @[[PSPDFColorPreset presetWithColor:UIColor.blackColor],
+                                         [PSPDFColorPreset presetWithColor:UIColor.redColor],
+                                         [PSPDFColorPreset presetWithColor:UIColor.greenColor],
+                                         [PSPDFColorPreset presetWithColor:UIColor.blueColor]];
+PSPDFDefaultAnnotationStyleManager *styleManager = (PSPDFDefaultAnnotationStyleManager *)PSPDFKitGlobal.sharedInstance.styleManager;
+PSPDFAnnotationStateVariantID key = PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringLine, nil);
+[styleManager setPresets:presets forKey:key type:PSPDFAnnotationStyleTypeColorPreset];
+    
   if ((self = [super initWithFrame:frame])) {
     [self setupDefaultStylesIfNeeded];
     NSLog(@"Color change 1");
@@ -614,6 +622,15 @@ NSString *colorProperty = NSStringFromSelector(@selector(color));
 #pragma mark - Lifecycle
 
 - (instancetype)initWithAnnotationStateManager:(PSPDFAnnotationStateManager *)annotationStateManager {
+    
+    NSArray<PSPDFColorPreset *> *presets = @[[PSPDFColorPreset presetWithColor:UIColor.blackColor],
+                                         [PSPDFColorPreset presetWithColor:UIColor.redColor],
+                                         [PSPDFColorPreset presetWithColor:UIColor.greenColor],
+                                         [PSPDFColorPreset presetWithColor:UIColor.blueColor]];
+PSPDFDefaultAnnotationStyleManager *styleManager = (PSPDFDefaultAnnotationStyleManager *)PSPDFKitGlobal.sharedInstance.styleManager;
+PSPDFAnnotationStateVariantID key = PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringLine, nil);
+[styleManager setPresets:presets forKey:key type:PSPDFAnnotationStyleTypeColorPreset];
+    
   if ((self = [super initWithAnnotationStateManager:annotationStateManager])) {
     // The biggest challenge here isn't the Clear button, but rather correctly updating the Clear button's states.
     NSNotificationCenter *dnc = NSNotificationCenter.defaultCenter;
