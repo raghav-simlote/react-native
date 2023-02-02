@@ -14,7 +14,11 @@
 #import "RCTConvert+UIBarButtonItem.h"
 
 #define VALIDATE_DOCUMENT(document, ...) { if (!document.isValid) { NSLog(@"Document is invalid."); if (self.onDocumentLoadFailed) { self.onDocumentLoadFailed(@{@"error": @"Document is invalid."}); } return __VA_ARGS__; }}
+@interface CustomButtonAnnotationToolbar : PSPDFAnnotationToolbar
 
+@property (nonatomic) PSPDFToolbarButton *clearAnnotationsButton;
+
+@end
 @interface RCTPSPDFKitViewController : PSPDFViewController
 @end
 
@@ -28,18 +32,21 @@
 
 - (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
-    _pdfController = [[RCTPSPDFKitViewController alloc] init];
+    // Set configuration to use the custom annotation toolbar when initializing the `PSPDFViewController`.
+    // For more details, see `PSCCustomizeAnnotationToolbarExample.m` from the Catalog app and our documentation here: https://pspdfkit.com/guides/ios/customizing-the-interface/customize-the-annotation-toolbar/
+    _pdfController = [[PSPDFViewController alloc] initWithDocument:nil configuration:[PSPDFConfiguration configurationWithBuilder:^(PSPDFConfigurationBuilder *builder) {
+      [builder overrideClass:PSPDFAnnotationToolbar.class withClass:CustomButtonAnnotationToolbar.class];
+    }]];
+
     _pdfController.delegate = self;
     _pdfController.annotationToolbarController.delegate = self;
     _closeButton = [[UIBarButtonItem alloc] initWithImage:[PSPDFKitGlobal imageNamed:@"x"] style:UIBarButtonItemStylePlain target:self action:@selector(closeButtonPressed:)];
-    
+
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(annotationChangedNotification:) name:PSPDFAnnotationChangedNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(annotationChangedNotification:) name:PSPDFAnnotationsAddedNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(annotationChangedNotification:) name:PSPDFAnnotationsRemovedNotification object:nil];
-
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(spreadIndexDidChange:) name:PSPDFDocumentViewControllerSpreadIndexDidChangeNotification object:nil];
   }
-  
+
   return self;
 }
 
@@ -511,6 +518,120 @@
   [coordinator animateAlongsideTransition:NULL completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
     [self applyViewState:self.viewState animateIfPossible:NO];
   }];
+}
+
+@end
+@implementation CustomButtonAnnotationToolbar
+
+///////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark - Lifecycle
+
+- (instancetype)initWithAnnotationStateManager:(PSPDFAnnotationStateManager *)annotationStateManager {
+  if ((self = [super initWithAnnotationStateManager:annotationStateManager])) {
+    // The biggest challenge here isn't the Clear button, but rather correctly updating the Clear button's states.
+    NSNotificationCenter *dnc = NSNotificationCenter.defaultCenter;
+    [dnc addObserver:self selector:@selector(annotationChangedNotification:) name:PSPDFAnnotationChangedNotification object:nil];
+    [dnc addObserver:self selector:@selector(annotationChangedNotification:) name:PSPDFAnnotationsAddedNotification object:nil];
+    [dnc addObserver:self selector:@selector(annotationChangedNotification:) name:PSPDFAnnotationsRemovedNotification object:nil];
+
+    // We could also use the delegate, but this is cleaner.
+    [dnc addObserver:self selector:@selector(willShowSpreadViewNotification:) name:PSPDFDocumentViewControllerWillBeginDisplayingSpreadViewNotification object:nil];
+
+    // Add Clear button.
+    UIImage *clearImage = [[PSPDFKitGlobal imageNamed:@"trash"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _clearAnnotationsButton = [PSPDFToolbarButton new];
+    _clearAnnotationsButton.accessibilityLabel = @"Clear";
+    [_clearAnnotationsButton setImage:clearImage];
+    [_clearAnnotationsButton addTarget:self action:@selector(clearButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+
+    [self updateClearAnnotationButton];
+    self.additionalButtons = @[_clearAnnotationsButton];
+
+    // Hide the callout and the signature buttons from the annotation toolbar.
+    NSMutableArray <PSPDFAnnotationToolbarConfiguration *> *toolbarConfigurations = [NSMutableArray<PSPDFAnnotationToolbarConfiguration *> new];;
+    for(PSPDFAnnotationToolbarConfiguration *toolbarConfiguration in self.configurations) {
+      NSMutableArray<PSPDFAnnotationGroup *> *filteredGroups = [NSMutableArray<PSPDFAnnotationGroup *> new];
+      for (PSPDFAnnotationGroup *group in toolbarConfiguration.annotationGroups) {
+        NSMutableArray<PSPDFAnnotationGroupItem *> *filteredItems = [NSMutableArray<PSPDFAnnotationGroupItem *> new];
+        for(PSPDFAnnotationGroupItem *item in group.items) {
+          BOOL isCallout = [item.variant isEqualToString:PSPDFAnnotationVariantStringFreeTextCallout];
+          BOOL isSignature = [item.type isEqualToString:PSPDFAnnotationStringSignature];
+          if (!isCallout && !isSignature) {
+            [filteredItems addObject:item];
+          }
+        }
+        if (filteredItems.count) {
+          [filteredGroups addObject:[PSPDFAnnotationGroup groupWithItems:filteredItems]];
+        }
+      }
+      [toolbarConfigurations addObject:[[PSPDFAnnotationToolbarConfiguration alloc] initWithAnnotationGroups:filteredGroups]];
+    }
+
+    self.configurations = [toolbarConfigurations copy];
+  }
+  return self;
+}
+
+- (void)dealloc {
+  [NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark - Clear Button Action
+
+- (void)clearButtonPressed:(id)sender {
+  // Iterate over all visible pages and remove everything but links and widgets (forms).
+  PSPDFViewController *pdfController = self.annotationStateManager.pdfController;
+  PSPDFDocument *document = pdfController.document;
+  for (PSPDFPageView *pageView in pdfController.visiblePageViews) {
+    NSArray<PSPDFAnnotation *> *annotations = [document annotationsForPageAtIndex:pageView.pageIndex type:PSPDFAnnotationTypeAll & ~(PSPDFAnnotationTypeLink | PSPDFAnnotationTypeWidget)];
+    [document removeAnnotations:annotations options:nil];
+
+    // Remove any annotation on the page as well (updates views).
+    // Alternatively, you can call `reloadData` on the `pdfController` as well.
+    for (PSPDFAnnotation *annotation in annotations) {
+      [pageView removeAnnotation:annotation options:nil animated:YES];
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark - Notifications
+
+// If we detect annotation changes, schedule a reload.
+- (void)annotationChangedNotification:(NSNotification *)notification {
+  // Reevaluate toolbar button.
+  if (self.window) {
+    [self updateClearAnnotationButton];
+  }
+}
+
+- (void)willShowSpreadViewNotification:(NSNotification *)notification {
+  [self updateClearAnnotationButton];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark - PSPDFAnnotationStateManagerDelegate
+
+- (void)annotationStateManager:(PSPDFAnnotationStateManager *)manager didChangeUndoState:(BOOL)undoEnabled redoState:(BOOL)redoEnabled {
+  [super annotationStateManager:manager didChangeUndoState:undoEnabled redoState:redoEnabled];
+  [self updateClearAnnotationButton];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark - Private
+
+- (void)updateClearAnnotationButton {
+  __block BOOL annotationsFound = NO;
+  PSPDFViewController *pdfController = self.annotationStateManager.pdfController;
+  [pdfController.visiblePageIndexes enumerateIndexesUsingBlock:^(NSUInteger pageIndex, BOOL *stop) {
+    NSArray<PSPDFAnnotation *> *annotations = [pdfController.document annotationsForPageAtIndex:pageIndex type:PSPDFAnnotationTypeAll & ~(PSPDFAnnotationTypeLink | PSPDFAnnotationTypeWidget)];
+    if (annotations.count > 0) {
+      annotationsFound = YES;
+      *stop = YES;
+    }
+  }];
+  self.clearAnnotationsButton.enabled = annotationsFound;
 }
 
 @end
