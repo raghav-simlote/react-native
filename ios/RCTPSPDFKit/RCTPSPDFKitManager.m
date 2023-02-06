@@ -20,7 +20,49 @@
 @import PSPDFKit;
 @import PSPDFKitUI;
 
+UIColor *drawingColor = [UIColor greenColor];
+UIColor *highlightingColor = [UIColor redColor];
+NSString *colorProperty = NSStringFromSelector(@selector(color));
+NSString *alphaProperty = NSStringFromSelector(@selector(alpha));
+NSString *lineWidthProperty = NSStringFromSelector(@selector(lineWidth));
+
+// Set ink color.
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:drawingColor forProperty:colorProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, nil)];
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:drawingColor forProperty:colorProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkPen)];
+
+// Set highlight color.
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:highlightingColor forProperty:colorProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkHighlighter)];
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:@(0.5f) forProperty:alphaProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkHighlighter)];
+
+// Set line width of ink annotations.
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:@(5) forProperty:lineWidthProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, nil)];
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:@(5) forProperty:lineWidthProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkPen)];
+
+// Set line width of highlight annotations.
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:@(20) forProperty:lineWidthProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkHighlighter)];
+
 @implementation RCTPSPDFKitManager
+
+UIColor *drawingColor = [UIColor greenColor];
+UIColor *highlightingColor = [UIColor redColor];
+NSString *colorProperty = NSStringFromSelector(@selector(color));
+NSString *alphaProperty = NSStringFromSelector(@selector(alpha));
+NSString *lineWidthProperty = NSStringFromSelector(@selector(lineWidth));
+
+// Set ink color.
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:drawingColor forProperty:colorProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, nil)];
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:drawingColor forProperty:colorProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkPen)];
+
+// Set highlight color.
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:highlightingColor forProperty:colorProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkHighlighter)];
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:@(0.5f) forProperty:alphaProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkHighlighter)];
+
+// Set line width of ink annotations.
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:@(5) forProperty:lineWidthProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, nil)];
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:@(5) forProperty:lineWidthProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkPen)];
+
+// Set line width of highlight annotations.
+[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:@(20) forProperty:lineWidthProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkHighlighter)];
 
 PSPDFSettingKey const PSPDFSettingKeyHybridEnvironment = @"com.pspdfkit.hybrid-environment";
 
