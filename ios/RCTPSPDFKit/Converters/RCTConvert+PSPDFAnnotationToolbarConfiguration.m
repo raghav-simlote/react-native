@@ -64,6 +64,26 @@
     [mapping setValue:PSPDFAnnotationStringImage forKeyPath:@"image"];
     [mapping setValue:PSPDFAnnotationStringRedaction forKeyPath:@"redaction"];
     
+    let drawingColor = UIColor.green
+let highlightingColor = UIColor.red
+let colorProperty = "color"
+let alphaProperty = "alpha"
+let lineWidthProperty = "lineWidth"
+
+SDK.shared.styleManager.setLastUsedValue(drawingColor, forProperty: colorProperty, forKey: Annotation.ToolVariantID(tool: .ink))
+SDK.shared.styleManager.setLastUsedValue(drawingColor, forProperty: colorProperty, forKey: Annotation.ToolVariantID(tool: .ink, variant: .inkPen))
+
+// Set highlight color.
+SDK.shared.styleManager.setLastUsedValue(highlightingColor, forProperty: colorProperty, forKey: Annotation.ToolVariantID(tool: .ink, variant: .inkHighlighter))
+SDK.shared.styleManager.setLastUsedValue(0.5, forProperty: alphaProperty, forKey: Annotation.ToolVariantID(tool: .ink, variant: .inkHighlighter))
+
+// Set line width of ink annotations.
+SDK.shared.styleManager.setLastUsedValue(5, forProperty: lineWidthProperty, forKey: Annotation.ToolVariantID(tool: .ink))
+SDK.shared.styleManager.setLastUsedValue(5, forProperty: lineWidthProperty, forKey: Annotation.ToolVariantID(tool: .ink, variant: .inkPen))
+
+// Set line width of highlight annotations.
+SDK.shared.styleManager.setLastUsedValue(20, forProperty: lineWidthProperty, forKey: Annotation.ToolVariantID(tool: .ink, variant: .inkHighlighter))
+    
      let black = UIColor.blackColor;
     let blue = [UIColor colorWithRed:0.141f green:0.573f blue:0.984f alpha:1.0f]; // #2492FB
     let red = [UIColor colorWithRed:0.871f green:0.278f blue:0.31f alpha:1.0f]; // #DE474F
