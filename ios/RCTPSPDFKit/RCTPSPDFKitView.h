@@ -9,6 +9,10 @@
 
 #import <UIKit/UIKit.h>
 #import <React/RCTComponent.h>
+#import "PSPDFKitDemo.h"
+
+@class TestSwift;
+
 
 @import PSPDFKit;
 @import PSPDFKitUI;
@@ -18,13 +22,22 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTPSPDFKitView: UIView
 
 @property (nonatomic, readonly) PSPDFViewController *pdfController;
+@property (nonatomic) PSPDFAnnotation *tapAnnotation;
+
+//@property (nonatomic, copy) PSPDFDocument *allDocument;
+@property (nonatomic, nullable) PSPDFDocument *prevDoc;
 @property (nonatomic) BOOL hideNavigationBar;
 @property (nonatomic, readonly) UIBarButtonItem *closeButton;
+@property (nonatomic) BOOL shouldAskForAnnotationUsername;
 @property (nonatomic) BOOL disableDefaultActionForTappedAnnotations;
 @property (nonatomic) BOOL disableAutomaticSaving;
 @property (nonatomic) PSPDFPageIndex pageIndex;
 @property (nonatomic, copy, nullable) NSString *annotationAuthorName;
 @property (nonatomic, copy) RCTBubblingEventBlock onCloseButtonPressed;
+@property (nonatomic, copy) RCTBubblingEventBlock onCloseButtonPressed1;
+@property (nonatomic, copy) RCTBubblingEventBlock onPrivateButtonPressed;
+@property (nonatomic) NSString *accessName;
+@property (nonatomic) NSString *compareOpenify;
 @property (nonatomic, copy) RCTBubblingEventBlock onDocumentSaved;
 @property (nonatomic, copy) RCTBubblingEventBlock onDocumentSaveFailed;
 @property (nonatomic, copy) RCTBubblingEventBlock onDocumentLoadFailed;
@@ -41,9 +54,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Document
 - (BOOL)saveCurrentDocumentWithError:(NSError *_Nullable *)error;
-
 /// Anotations
 - (NSDictionary<NSString *, NSArray<NSDictionary *> *> *)getAnnotations:(PSPDFPageIndex)pageIndex type:(PSPDFAnnotationType)type error:(NSError *_Nullable *)error;
+- (NSDictionary<NSString *, NSArray<NSDictionary *> *> *)getVersions:(NSString*)url url1:(NSString*)url1 error:(NSError *_Nullable *)error;
+- (NSDictionary<NSString *, NSArray<NSDictionary *> *> *)compareOpen:(NSString*)url url1:(NSString*)url1 error:(NSError *_Nullable *)error;
 - (BOOL)addAnnotation:(id)jsonAnnotation error:(NSError *_Nullable *)error;
 - (BOOL)removeAnnotationWithUUID:(NSString *)annotationUUID;
 - (NSDictionary<NSString *, NSArray<NSDictionary *> *> *)getAllUnsavedAnnotationsWithError:(NSError *_Nullable *)error;
