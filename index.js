@@ -27,6 +27,19 @@ class PSPDFKitView extends React.Component {
             this.props.onCloseButtonPressed(event.nativeEvent);
           }
         : null;
+        const onCloseButtonPressedHandler1 = this.props.onCloseButtonPressed1
+        ? event => {
+            console.log('our close button called');
+            this.props.onCloseButtonPressed1(event.nativeEvent);
+          }
+        : null;
+        const onPrivateButtonPressedHandler = this.props.onPrivateButtonPressed
+        ? event => {
+            console.log('our private button called',event);
+            console.log('our private button called1', event.nativeEvent);
+            this.props.onPrivateButtonPressed(event.nativeEvent);
+          }
+        : null;
       return (
         // eslint-disable-next-line react/jsx-no-undef
         <RCTPSPDFKitView
@@ -34,6 +47,8 @@ class PSPDFKitView extends React.Component {
           fragmentTag="PSPDFKitView.FragmentTag"
           {...this.props}
           onCloseButtonPressed={onCloseButtonPressedHandler}
+          onCloseButtonPressed1={onCloseButtonPressedHandler1}
+          onPrivateButtonPressed={this._onPrivateChanged}
           onStateChanged={this._onStateChanged}
           onDocumentSaved={this._onDocumentSaved}
           onDocumentSaveFailed={this._onDocumentSaveFailed}
@@ -45,6 +60,7 @@ class PSPDFKitView extends React.Component {
         />
       );
     } else {
+      console.log("null");
       return null;
     }
   }
@@ -52,6 +68,13 @@ class PSPDFKitView extends React.Component {
   _onStateChanged = event => {
     if (this.props.onStateChanged) {
       this.props.onStateChanged(event.nativeEvent);
+    }
+  };
+
+  _onPrivateChanged = event => {
+    //this.props.onPrivateButtonPressed(event.nativeEvent);
+    if (this.props.onPrivateButtonPressed) {
+      this.props.onPrivateButtonPressed(event.nativeEvent);
     }
   };
 
@@ -203,6 +226,20 @@ class PSPDFKitView extends React.Component {
     }
   };
 
+  getVersions = function (url, url1) {
+		return NativeModules.PSPDFKitViewManager.getVersions(
+			url,
+			url1,
+			findNodeHandle(this.refs.pdfView),
+		);
+	};
+  compareOpen = function (url, url1) {
+		return NativeModules.PSPDFKitViewManager.compareOpen(
+			url,
+			url1,
+			findNodeHandle(this.refs.pdfView),
+		);
+	};
   /**
    * Adds a new annotation to the current document.
    *
@@ -584,6 +621,7 @@ PSPDFKitView.propTypes = {
    * @platform ios
    */
   showCloseButton: PropTypes.bool,
+  
   /**
    * Controls wheter or not the default action for tapped annotations is processed. Defaults to processing the action (false).
    */
