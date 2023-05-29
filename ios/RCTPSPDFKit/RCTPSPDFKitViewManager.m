@@ -145,6 +145,10 @@ RCT_CUSTOM_VIEW_PROPERTY(showCloseButton, BOOL, RCTPSPDFKitView) {
 
 RCT_EXPORT_VIEW_PROPERTY(onCloseButtonPressed, RCTBubblingEventBlock)
 
+RCT_EXPORT_VIEW_PROPERTY(onCloseButtonPressed1, RCTBubblingEventBlock)
+
+RCT_EXPORT_VIEW_PROPERTY(onPrivateButtonPressed, RCTBubblingEventBlock)
+
 RCT_EXPORT_VIEW_PROPERTY(onDocumentSaved, RCTBubblingEventBlock)
 
 RCT_EXPORT_VIEW_PROPERTY(onDocumentSaveFailed, RCTBubblingEventBlock)
@@ -220,6 +224,31 @@ RCT_REMAP_METHOD(getAnnotations, getAnnotations:(nonnull NSNumber *)pageIndex ty
     RCTPSPDFKitView *component = (RCTPSPDFKitView *)[self.bridge.uiManager viewForReactTag:reactTag];
     NSError *error;
     NSDictionary *annotations = [component getAnnotations:(PSPDFPageIndex)pageIndex.integerValue type:[RCTConvert annotationTypeFromInstantJSONType:type] error:&error];
+    if (annotations) {
+      resolve(annotations);
+    } else {
+      reject(@"error", @"Failed to get annotations.", error);
+    }
+  });
+}
+RCT_REMAP_METHOD(getVersions, getVersions:(NSString *)url url1:(NSString *)url1 reactTag:(nonnull NSNumber *)reactTag resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+  dispatch_async(dispatch_get_main_queue(), ^{
+    RCTPSPDFKitView *component = (RCTPSPDFKitView *)[self.bridge.uiManager viewForReactTag:reactTag];
+    NSError *error;
+      NSDictionary *annotations = [component getVersions:(NSString*)url url1:(NSString*)url1 error:&error];
+    if (annotations) {
+      resolve(annotations);
+    } else {
+      reject(@"error", @"Failed to get annotations.", error);
+    }
+  });
+}
+
+RCT_REMAP_METHOD(compareOpen, compareOpen:(NSString *)url url1:(NSString *)url1 reactTag:(nonnull NSNumber *)reactTag resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+  dispatch_async(dispatch_get_main_queue(), ^{
+    RCTPSPDFKitView *component = (RCTPSPDFKitView *)[self.bridge.uiManager viewForReactTag:reactTag];
+    NSError *error;
+      NSDictionary *annotations = [component compareOpen:(NSString*)url url1:(NSString*)url1 error:&error];
     if (annotations) {
       resolve(annotations);
     } else {
@@ -402,15 +431,6 @@ RCT_EXPORT_METHOD(getRightBarButtonItemsForViewMode:(nullable NSString *)viewMod
   // Customize the font picker before it appears.
   self.showDownloadableFonts = staticShowDownloadableFonts;
   self.selectedFont = [self customSelectedFont];
- 
- NSLog(@"Color change 1 ");
-    UIColor *drawingColor = [UIColor greenColor];
-UIColor *highlightingColor = [UIColor redColor];
-NSString *colorProperty = NSStringFromSelector(@selector(color));
-    [PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:drawingColor forProperty:colorProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, nil)];
-[PSPDFKitGlobal.sharedInstance.styleManager setLastUsedValue:drawingColor forProperty:colorProperty forKey:PSPDFAnnotationStateVariantIDMake(PSPDFAnnotationStringInk, PSPDFAnnotationVariantStringInkPen)];
-    NSLog(@"Color change 2");
- 
 }
 
 @end
